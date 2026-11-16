@@ -11,7 +11,7 @@ GOD EATER BURST Hook Libraries for PSP/PPSSPP
 
 ## Build
 - i use windows. set your SDK PATH or location of the PSPSDK in the PSPModBase in the *.cmd file
-- Use PowerShell to compile: `build-gcc11.cmd --clean-first`
+- Use PowerShell to compile: `.\build-gcc11.cmd --clean-first`
 
 
 ## HP Hook Library Preview
