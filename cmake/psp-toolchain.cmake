@@ -1,0 +1,39 @@
+# Native Windows CMake with the PSPModBase Cygwin cross-toolchain.
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR allegrex)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+get_filename_component(_bundled_sdk
+    "${CMAKE_CURRENT_LIST_DIR}/../../SAMPLE_SCRIPTS/PSPModBase/external/pspsdk"
+    ABSOLUTE)
+set(PSP_CYGWIN_ROOT "${_bundled_sdk}" CACHE PATH "PSPModBase Cygwin bundle root")
+set(PSPDEV_ROOT "${PSP_CYGWIN_ROOT}/usr/local/pspdev" CACHE PATH "PSPDEV installation")
+set(PSP_SDK_ROOT "${PSPDEV_ROOT}/psp/sdk" CACHE PATH "PSPSDK installation")
+
+list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
+    PSP_CYGWIN_ROOT PSPDEV_ROOT PSP_SDK_ROOT)
+
+# Use host-native paths, not /usr/local paths that Git Bash can rewrite.
+set(ENV{PSPDEV} "${PSPDEV_ROOT}")
+set(ENV{PSPSDK} "${PSP_SDK_ROOT}")
+if(CMAKE_HOST_WIN32)
+    set(ENV{PATH} "${PSP_CYGWIN_ROOT}/bin;${PSPDEV_ROOT}/bin;$ENV{PATH}")
+endif()
+
+find_program(CMAKE_C_COMPILER NAMES psp-gcc
+    PATHS "${PSPDEV_ROOT}/bin" NO_DEFAULT_PATH REQUIRED)
+set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "PSP assembly compiler")
+find_program(CMAKE_AR NAMES psp-ar
+    PATHS "${PSPDEV_ROOT}/bin" NO_DEFAULT_PATH REQUIRED)
+find_program(CMAKE_RANLIB NAMES psp-ranlib
+    PATHS "${PSPDEV_ROOT}/bin" NO_DEFAULT_PATH REQUIRED)
+find_program(CMAKE_NM NAMES psp-nm
+    PATHS "${PSPDEV_ROOT}/bin" NO_DEFAULT_PATH REQUIRED)
+find_program(CMAKE_OBJDUMP NAMES psp-objdump
+    PATHS "${PSPDEV_ROOT}/bin" NO_DEFAULT_PATH REQUIRED)
+
+set(CMAKE_FIND_ROOT_PATH "${PSPDEV_ROOT}/psp" "${PSP_SDK_ROOT}")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
